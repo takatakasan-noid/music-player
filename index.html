@@ -4,31 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>マイ音楽プレイヤー</title>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body>
 
 <header>
-  <h1>🎵 マイ音楽プレイヤー</h1>
+  <h1><span class="icon" data-icon="music"></span> マイ音楽プレイヤー</h1>
   <div id="connect-bar">
-    <span id="connect-status">未ログイン</span>
-    <button id="connect-btn">🔐 Googleでログイン</button>
+    <button id="connect-btn" class="round" title="Googleでログイン"><span class="icon" data-icon="lock"></span></button>
   </div>
 </header>
 
 <div id="app">
   <aside id="playlist-panel">
-    <div class="panel-title">プレイリスト</div>
+    <div class="panel-title-row">
+      <span class="panel-title">プレイリスト</span>
+      <button id="new-playlist-btn" class="icon-btn round" title="新規プレイリストを作成"><span class="icon" data-icon="plus"></span></button>
+    </div>
     <ul id="playlist-list"></ul>
-    <button id="new-playlist-btn">＋ 新規プレイリスト</button>
   </aside>
 
   <main id="dropzone">
-    <div id="dropzone-overlay">🎵 ここに曲をドロップして追加</div>
+    <div id="dropzone-overlay"><span class="icon" data-icon="music"></span> ここに曲をドロップして追加</div>
     <div class="list-header">
       <span id="current-view-title">すべての曲</span>
-      <label class="add-btn" id="add-btn-label">
-        ＋ 曲を追加
+      <label class="add-btn" id="add-btn-label" title="曲を追加">
+        <span class="icon" data-icon="plus"></span>
         <input type="file" id="file-input" accept="audio/*" multiple hidden>
       </label>
     </div>
@@ -47,10 +48,10 @@
     <span id="duration">0:00</span>
   </div>
   <div class="controls">
-    <button id="repeat-btn" title="繰り返し">🔁</button>
-    <button id="prev-btn" title="前の曲">⏮</button>
-    <button id="play-btn" title="再生/一時停止">▶</button>
-    <button id="next-btn" title="次の曲">⏭</button>
+    <button id="repeat-btn" title="繰り返し"><span class="icon" data-icon="repeat"></span></button>
+    <button id="prev-btn" title="前の曲"><span class="icon" data-icon="skipBack"></span></button>
+    <button id="play-btn" title="再生/一時停止"><span class="icon" data-icon="play"></span></button>
+    <button id="next-btn" title="次の曲"><span class="icon" data-icon="skipForward"></span></button>
     <span class="controls-spacer"></span>
   </div>
 </div>
@@ -58,6 +59,7 @@
 <audio id="audio"></audio>
 
 <script src="js/config.js"></script>
+<script src="js/icons.js"></script>
 <script src="js/drive.js"></script>
 <script src="js/player.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer onload="onGisLoad()"></script>

@@ -51,7 +51,7 @@ const Drive = {
 
   async listFiles() {
     const q = encodeURIComponent(`'${CONFIG.FOLDER_ID}' in parents and trashed = false`);
-    const fields = encodeURIComponent("files(id,name,mimeType,modifiedTime)");
+    const fields = encodeURIComponent("files(id,name,mimeType,modifiedTime,createdTime)");
     const orderBy = encodeURIComponent("modifiedTime desc");
     const url = `${DRIVE_API}/files?q=${q}&fields=${fields}&orderBy=${orderBy}&pageSize=1000`;
     const res = await this.apiFetch(url);
@@ -71,7 +71,7 @@ const Drive = {
       if (!this.isAudioName(f.name)) continue;
       const dot = f.name.lastIndexOf(".");
       const title = dot === -1 ? f.name : f.name.slice(0, dot);
-      songs.push({ id: f.id, title, artist: "", file: f.name });
+      songs.push({ id: f.id, title, artist: "", file: f.name, createdTime: f.createdTime });
     }
     return songs;
   },
@@ -124,14 +124,14 @@ const Drive = {
       const form = new FormData();
       form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
       form.append("file", file);
-      const res = await this.apiFetch(`${DRIVE_UPLOAD_API}/files?uploadType=multipart&fields=id,name`, {
+      const res = await this.apiFetch(`${DRIVE_UPLOAD_API}/files?uploadType=multipart&fields=id,name,createdTime`, {
         method: "POST",
         body: form,
       });
       const data = await res.json();
       const dot = data.name.lastIndexOf(".");
       const title = dot === -1 ? data.name : data.name.slice(0, dot);
-      uploaded.push({ id: data.id, title, artist: "", file: data.name });
+      uploaded.push({ id: data.id, title, artist: "", file: data.name, createdTime: data.createdTime });
     }
     return uploaded;
   },

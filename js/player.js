@@ -16,7 +16,6 @@ const currentViewTitleEl = document.getElementById("current-view-title");
 const dropzoneEl = document.getElementById("dropzone");
 const fileInputEl = document.getElementById("file-input");
 const addBtnLabel = document.getElementById("add-btn-label");
-const connectStatusEl = document.getElementById("connect-status");
 const connectBtnEl = document.getElementById("connect-btn");
 
 // ---- State ----
@@ -39,8 +38,16 @@ function formatTime(sec) {
 }
 
 // ---- View / rendering ----
+const RECENT_DAYS = 7;
+
 function computeDisplayedQueue() {
   if (currentView.type === "library") return library.slice();
+  if (currentView.type === "recent") {
+    const cutoff = Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000;
+    return library
+      .filter((s) => s.createdTime && new Date(s.createdTime).getTime() >= cutoff)
+      .sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
+  }
   const pl = playlists.find((p) => p.id === currentView.id);
   if (!pl) return [];
   return pl.songFiles.map((f) => library.find((s) => s.file === f)).filter(Boolean);
@@ -58,9 +65,15 @@ function renderPlaylistPanel() {
 
   const libLi = document.createElement("li");
   libLi.className = "playlist-item" + (currentView.type === "library" ? " active" : "");
-  libLi.textContent = "📚 すべての曲";
+  libLi.innerHTML = `<span class="icon">${Icons.list}</span> すべての曲`;
   libLi.addEventListener("click", () => selectView({ type: "library" }));
   playlistListEl.appendChild(libLi);
+
+  const recentLi = document.createElement("li");
+  recentLi.className = "playlist-item" + (currentView.type === "recent" ? " active" : "");
+  recentLi.innerHTML = `<span class="icon">${Icons.clock}</span> 今週の新着`;
+  recentLi.addEventListener("click", () => selectView({ type: "recent" }));
+  playlistListEl.appendChild(recentLi);
 
   playlists.forEach((pl) => {
     const li = document.createElement("li");
@@ -77,7 +90,7 @@ function renderPlaylistPanel() {
 
     const renameBtn = document.createElement("button");
     renameBtn.className = "icon-btn small";
-    renameBtn.textContent = "✎";
+    renameBtn.innerHTML = `<span class="icon">${Icons.edit}</span>`;
     renameBtn.title = "名前を変更";
     renameBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -86,7 +99,7 @@ function renderPlaylistPanel() {
 
     const delBtn = document.createElement("button");
     delBtn.className = "icon-btn small";
-    delBtn.textContent = "🗑";
+    delBtn.innerHTML = `<span class="icon">${Icons.trash}</span>`;
     delBtn.title = "削除";
     delBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -112,6 +125,8 @@ function renderSongList() {
       emptyMessageEl.textContent = "「🔐 Googleでログイン」してください。";
     } else if (isPlaylistView) {
       emptyMessageEl.textContent = "このプレイリストにはまだ曲がありません。「すべての曲」から追加してください。";
+    } else if (currentView.type === "recent") {
+      emptyMessageEl.textContent = `直近${RECENT_DAYS}日以内に追加された曲はありません。`;
     } else {
       emptyMessageEl.textContent = "曲がありません。上の「＋ 曲を追加」またはドラッグ&ドロップで追加してください。";
     }
@@ -149,7 +164,7 @@ function renderSongList() {
 
     const handle = document.createElement("span");
     handle.className = "drag-handle";
-    handle.textContent = isPlaylistView ? "⠿" : "";
+    handle.innerHTML = isPlaylistView ? `<span class="icon">${Icons.grip}</span>` : "";
 
     const index = document.createElement("div");
     index.className = "song-index";
@@ -173,7 +188,7 @@ function renderSongList() {
     if (isPlaylistView) {
       const removeBtn = document.createElement("button");
       removeBtn.className = "icon-btn";
-      removeBtn.textContent = "－";
+      removeBtn.innerHTML = `<span class="icon">${Icons.x}</span>`;
       removeBtn.title = "プレイリストから削除";
       removeBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -184,7 +199,7 @@ function renderSongList() {
       const select = document.createElement("select");
       select.className = "add-to-playlist";
       const defaultOpt = document.createElement("option");
-      defaultOpt.textContent = playlists.length ? "＋ プレイリストに追加" : "プレイリストなし";
+      defaultOpt.textContent = playlists.length ? "+ プレイリストに追加" : "プレイリストなし";
       defaultOpt.value = "";
       select.appendChild(defaultOpt);
       playlists.forEach((pl) => {
@@ -220,6 +235,8 @@ function selectView(view) {
   currentView = view;
   if (view.type === "library") {
     currentViewTitleEl.textContent = "すべての曲";
+  } else if (view.type === "recent") {
+    currentViewTitleEl.textContent = `🆕 今週の新着（直近${RECENT_DAYS}日）`;
   } else {
     const pl = playlists.find((p) => p.id === view.id);
     currentViewTitleEl.textContent = pl ? pl.name : "";
@@ -358,25 +375,25 @@ function setRepeatMode(mode) {
   repeatMode = mode;
   repeatBtnEl.classList.remove("repeat-off", "repeat-all", "repeat-one");
   if (mode === "none") {
-    repeatBtnEl.textContent = "🔁";
+    repeatBtnEl.innerHTML = `<span class="icon">${Icons.repeat}</span>`;
     repeatBtnEl.classList.add("repeat-off");
     repeatBtnEl.title = "繰り返し: なし";
   } else if (mode === "all") {
-    repeatBtnEl.textContent = "🔁";
+    repeatBtnEl.innerHTML = `<span class="icon">${Icons.repeat}</span>`;
     repeatBtnEl.classList.add("repeat-all");
     repeatBtnEl.title = "繰り返し: 全曲";
   } else {
-    repeatBtnEl.textContent = "🔂";
+    repeatBtnEl.innerHTML = `<span class="icon">${Icons.repeatOne}</span>`;
     repeatBtnEl.classList.add("repeat-one");
     repeatBtnEl.title = "繰り返し: 1曲";
   }
 }
 
 audio.addEventListener("play", () => {
-  playBtn.textContent = "⏸";
+  playBtn.innerHTML = `<span class="icon">${Icons.pause}</span>`;
 });
 audio.addEventListener("pause", () => {
-  playBtn.textContent = "▶";
+  playBtn.innerHTML = `<span class="icon">${Icons.play}</span>`;
 });
 audio.addEventListener("ended", () => {
   if (repeatMode === "one") {
@@ -386,7 +403,7 @@ audio.addEventListener("ended", () => {
   }
   const isLast = playbackIndex >= playbackQueue.length - 1;
   if (isLast && repeatMode !== "all") {
-    playBtn.textContent = "▶";
+    playBtn.innerHTML = `<span class="icon">${Icons.play}</span>`;
     return;
   }
   playAtQueueIndex((playbackIndex + 1) % playbackQueue.length);
@@ -464,18 +481,23 @@ fileInputEl.addEventListener("change", () => {
 
 // ---- Google sign-in ----
 function setConnectUI(mode) {
+  connectBtnEl.classList.remove("state-none", "state-connected", "state-loading", "state-error");
   if (mode === "connected") {
-    connectStatusEl.textContent = "✅ ログイン中";
-    connectBtnEl.style.display = "none";
+    connectBtnEl.classList.add("state-connected");
+    connectBtnEl.title = "ログイン中";
+    connectBtnEl.innerHTML = `<span class="icon">${Icons.checkCircle}</span>`;
   } else if (mode === "loading") {
-    connectStatusEl.textContent = "読み込み中...";
-    connectBtnEl.style.display = "none";
+    connectBtnEl.classList.add("state-loading");
+    connectBtnEl.title = "読み込み中...";
+    connectBtnEl.innerHTML = `<span class="icon">${Icons.lock}</span>`;
   } else if (mode === "error") {
-    connectStatusEl.textContent = "⚠ ログインに失敗しました";
-    connectBtnEl.style.display = "inline-block";
+    connectBtnEl.classList.add("state-error");
+    connectBtnEl.title = "ログインに失敗しました（クリックして再試行）";
+    connectBtnEl.innerHTML = `<span class="icon">${Icons.alertTriangle}</span>`;
   } else {
-    connectStatusEl.textContent = "未ログイン";
-    connectBtnEl.style.display = "inline-block";
+    connectBtnEl.classList.add("state-none");
+    connectBtnEl.title = "Googleでログイン";
+    connectBtnEl.innerHTML = `<span class="icon">${Icons.lock}</span>`;
   }
 }
 

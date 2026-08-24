@@ -2,6 +2,8 @@
   --bg: #121212;
   --panel: #1c1c1e;
   --accent: #4f9dff;
+  --lime: #a3e635;
+  --danger: #f87171;
   --text: #f2f2f2;
   --text-sub: #9a9a9a;
   --border: #2c2c2e;
@@ -9,6 +11,11 @@
 
 * {
   box-sizing: border-box;
+}
+
+.icon {
+  display: inline-flex;
+  vertical-align: -0.15em;
 }
 
 body {
@@ -19,41 +26,61 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  font-size: 16px;
 }
 
 header {
-  padding: 20px 20px 10px;
+  padding: 22px 20px 12px;
   text-align: center;
 }
 
 header h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 600;
 }
 
 #connect-bar {
-  margin-top: 8px;
+  margin-top: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  font-size: 12px;
-  color: var(--text-sub);
 }
 
 #connect-bar button {
   background: var(--panel);
   border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 12px;
-  padding: 6px 12px;
-  border-radius: 999px;
+  color: var(--text-sub);
   cursor: pointer;
+}
+
+#connect-bar button.round {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #connect-bar button:hover {
   background: #26262a;
+}
+
+#connect-bar button.state-connected {
+  color: var(--lime);
+  border-color: var(--lime);
+}
+
+#connect-bar button.state-error {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+#connect-bar button.state-loading {
+  color: var(--text-sub);
+  opacity: 0.6;
 }
 
 #app {
@@ -61,26 +88,33 @@ header h1 {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  padding: 12px 16px 150px;
+  padding: 16px 16px 150px;
   display: flex;
   gap: 20px;
   align-items: flex-start;
+  font-size: 16px;
 }
 
 #playlist-panel {
-  width: 180px;
+  width: 200px;
   flex-shrink: 0;
   background: var(--panel);
   border-radius: 10px;
-  padding: 10px;
+  padding: 12px;
   position: sticky;
   top: 12px;
 }
 
+.panel-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 6px 10px;
+}
+
 .panel-title {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-sub);
-  padding: 4px 8px 8px;
 }
 
 #playlist-list {
@@ -97,9 +131,9 @@ header h1 {
   align-items: center;
   justify-content: space-between;
   gap: 4px;
-  padding: 7px 8px;
+  padding: 9px 8px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 15px;
   cursor: pointer;
   color: var(--text-sub);
 }
@@ -136,8 +170,8 @@ header h1 {
   border: none;
   color: var(--text-sub);
   cursor: pointer;
-  padding: 2px 4px;
-  font-size: 13px;
+  padding: 4px 6px;
+  font-size: 15px;
   border-radius: 4px;
 }
 
@@ -147,24 +181,17 @@ header h1 {
 }
 
 .icon-btn.small {
-  font-size: 11px;
+  font-size: 13px;
 }
 
-#new-playlist-btn {
-  width: 100%;
-  margin-top: 8px;
-  background: none;
-  border: 1px dashed var(--border);
-  color: var(--text-sub);
-  font-size: 12px;
-  padding: 7px 8px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#new-playlist-btn:hover {
-  color: var(--text);
-  border-color: var(--accent);
+.icon-btn.round {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
 main {
@@ -178,21 +205,26 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 2px 12px;
+  padding: 4px 2px 14px;
 }
 
 #current-view-title {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
 }
 
 .add-btn {
   background: var(--accent);
   color: #fff;
-  font-size: 12px;
-  padding: 6px 12px;
-  border-radius: 999px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .add-btn:hover {
@@ -209,7 +241,8 @@ main {
   border-radius: 10px;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  gap: 8px;
+  font-size: 17px;
   color: var(--accent);
   pointer-events: none;
 }
@@ -223,7 +256,7 @@ main {
   color: var(--text-sub);
   padding: 40px 16px;
   line-height: 1.7;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 #empty-message code {
@@ -246,7 +279,7 @@ main {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 11px 12px;
   border-radius: 10px;
   background: var(--panel);
   cursor: pointer;
@@ -267,10 +300,10 @@ main {
 }
 
 .drag-handle {
-  width: 14px;
+  width: 16px;
   flex-shrink: 0;
   color: var(--text-sub);
-  font-size: 14px;
+  font-size: 16px;
   cursor: grab;
   text-align: center;
 }
@@ -280,7 +313,7 @@ main {
 }
 
 .song-action .icon-btn {
-  font-size: 15px;
+  font-size: 17px;
 }
 
 select.add-to-playlist {
@@ -288,9 +321,9 @@ select.add-to-playlist {
   color: var(--text-sub);
   border: 1px solid var(--border);
   border-radius: 6px;
-  font-size: 11px;
-  padding: 4px 6px;
-  max-width: 120px;
+  font-size: 13px;
+  padding: 5px 6px;
+  max-width: 130px;
 }
 
 select.add-to-playlist:disabled {
@@ -312,7 +345,7 @@ select.add-to-playlist:disabled {
 }
 
 .song-title {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -320,7 +353,7 @@ select.add-to-playlist:disabled {
 }
 
 .song-artist {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-sub);
   white-space: nowrap;
   overflow: hidden;
@@ -328,9 +361,9 @@ select.add-to-playlist:disabled {
 }
 
 .song-index {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-sub);
-  width: 20px;
+  width: 22px;
   text-align: right;
   flex-shrink: 0;
 }
@@ -352,7 +385,7 @@ select.add-to-playlist:disabled {
 
 #now-playing {
   text-align: center;
-  font-size: 13px;
+  font-size: 14px;
   margin-bottom: 8px;
   color: var(--text-sub);
 }
@@ -366,7 +399,7 @@ select.add-to-playlist:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 22px;
   margin-bottom: 8px;
 }
 
@@ -374,16 +407,16 @@ select.add-to-playlist:disabled {
   background: none;
   border: none;
   color: var(--text);
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
   padding: 8px;
   line-height: 1;
 }
 
 .controls button#play-btn {
-  font-size: 28px;
-  width: 48px;
-  height: 48px;
+  font-size: 30px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: var(--accent);
   color: #fff;
@@ -393,7 +426,7 @@ select.add-to-playlist:disabled {
 }
 
 .controls button#repeat-btn {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .controls button#repeat-btn.repeat-off {
@@ -420,9 +453,9 @@ select.add-to-playlist:disabled {
 }
 
 .seek-row span {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-sub);
-  width: 36px;
+  width: 38px;
   text-align: center;
 }
 
