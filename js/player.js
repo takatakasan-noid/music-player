@@ -352,7 +352,7 @@ async function playCurrent() {
     audio.src = url;
     await audio.play();
     nowPlayingEl.textContent = song.artist ? `${song.title} - ${song.artist}` : song.title;
-    document.title = `▶ ${song.title} | マイ音楽プレイヤー`;
+    document.title = `▶ ${song.title} | My BroadCast`;
   } catch (e) {
     nowPlayingEl.textContent = `${song.title} の再生に失敗しました`;
   }

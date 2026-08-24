@@ -5,5 +5,5 @@ const CONFIG = {
 
   // 音源を入れるGoogle DriveフォルダのID
   // フォルダURL: https://drive.google.com/drive/folders/【この部分】
-  FOLDER_ID: "1pjLwZaek6bBh8EUGCRhsAYfJWHC8fDug",
+  FOLDER_ID: "1HaM5FsA6Vz4iCjcnJHdJUC9s25gwdQBe",
 };

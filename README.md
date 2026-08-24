@@ -1,4 +1,4 @@
-# マイ音楽プレイヤー（Google Drive版）
+# My BroadCast（Google Drive版）
 
 自分で録音した音楽を、Google Driveに保存したままブラウザ（PC・iPhoneどちらも）で再生できるサイトです。音源の実体はGoogle Drive上だけに置かれ、このサイト自体には保存されません。ログインしたご自身のGoogleアカウントでしかアクセスできません。
 
