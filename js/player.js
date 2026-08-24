@@ -493,19 +493,30 @@ async function loadFromDrive() {
   }
 }
 
+let autoSignInAttempt = false;
+
 connectBtnEl.addEventListener("click", () => {
   if (!Drive.tokenClient) return;
-  Drive.signIn(true);
+  autoSignInAttempt = false;
+  Drive.signIn();
 });
 
 function onGisLoad() {
   Drive.initTokenClient((token) => {
     if (token) {
       loadFromDrive();
+      return;
+    }
+    if (autoSignInAttempt) {
+      // ページを開いた直後の自動ログイン試行が失敗しても、エラー扱いにはしない
+      autoSignInAttempt = false;
+      setConnectUI("none");
     } else {
       setConnectUI("error");
     }
   });
+  autoSignInAttempt = true;
+  Drive.signIn();
 }
 
 setConnectUI("none");

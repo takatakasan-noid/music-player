@@ -29,8 +29,9 @@ const Drive = {
     });
   },
 
-  signIn(interactive) {
-    this.tokenClient.requestAccessToken({ prompt: interactive ? "consent" : "" });
+  signIn() {
+    // 初回は同意画面が必要な分だけ表示され、許可済みなら自動で（無言で）ログインされる
+    this.tokenClient.requestAccessToken({ prompt: "" });
   },
 
   async apiFetch(url, options = {}) {
@@ -51,7 +52,8 @@ const Drive = {
   async listFiles() {
     const q = encodeURIComponent(`'${CONFIG.FOLDER_ID}' in parents and trashed = false`);
     const fields = encodeURIComponent("files(id,name,mimeType,modifiedTime)");
-    const url = `${DRIVE_API}/files?q=${q}&fields=${fields}&orderBy=name&pageSize=1000`;
+    const orderBy = encodeURIComponent("modifiedTime desc");
+    const url = `${DRIVE_API}/files?q=${q}&fields=${fields}&orderBy=${orderBy}&pageSize=1000`;
     const res = await this.apiFetch(url);
     const data = await res.json();
     return data.files || [];
