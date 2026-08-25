@@ -40,12 +40,31 @@ function formatTime(sec) {
 // ---- View / rendering ----
 const RECENT_DAYS = 7;
 
+// ---- 自動振り分けプレイリスト（曲名の先頭で自動分類） ----
+const AUTO_PLAYLISTS = [
+  { key: "radio", name: "ラジオ英会話", test: (title) => /^[0-9]/.test(title) },
+  { key: "ese", name: "Enjoy Simple English", test: (title) => /^ESE/i.test(title) },
+  { key: "bbc", name: "BBC", test: (title) => /^BBC/i.test(title) },
+  { key: "news", name: "ニュースで学ぶ現代英語", test: (title) => title.startsWith("ニュ学") },
+  { key: "other", name: "その他", test: () => true },
+];
+
+function classifyAuto(song) {
+  const title = (song.title || song.file || "").trim();
+  return AUTO_PLAYLISTS.find((c) => c.test(title)) || AUTO_PLAYLISTS[AUTO_PLAYLISTS.length - 1];
+}
+
 function computeDisplayedQueue() {
   if (currentView.type === "library") return library.slice();
   if (currentView.type === "recent") {
     const cutoff = Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000;
     return library
       .filter((s) => s.createdTime && new Date(s.createdTime).getTime() >= cutoff)
+      .sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
+  }
+  if (currentView.type === "auto") {
+    return library
+      .filter((s) => classifyAuto(s).key === currentView.key)
       .sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
   }
   const pl = playlists.find((p) => p.id === currentView.id);
@@ -74,6 +93,20 @@ function renderPlaylistPanel() {
   recentLi.innerHTML = `<span class="icon">${Icons.clock}</span> 今週の新着`;
   recentLi.addEventListener("click", () => selectView({ type: "recent" }));
   playlistListEl.appendChild(recentLi);
+
+  const autoTitleLi = document.createElement("li");
+  autoTitleLi.className = "panel-subtitle";
+  autoTitleLi.textContent = "自動振り分け";
+  playlistListEl.appendChild(autoTitleLi);
+
+  AUTO_PLAYLISTS.forEach((cat) => {
+    const li = document.createElement("li");
+    li.className =
+      "playlist-item" + (currentView.type === "auto" && currentView.key === cat.key ? " active" : "");
+    li.innerHTML = `<span class="icon">${Icons.list}</span> ${cat.name}`;
+    li.addEventListener("click", () => selectView({ type: "auto", key: cat.key }));
+    playlistListEl.appendChild(li);
+  });
 
   playlists.forEach((pl) => {
     const li = document.createElement("li");
@@ -127,6 +160,8 @@ function renderSongList() {
       emptyMessageEl.textContent = "このプレイリストにはまだ曲がありません。「すべての曲」から追加してください。";
     } else if (currentView.type === "recent") {
       emptyMessageEl.textContent = `直近${RECENT_DAYS}日以内に追加された曲はありません。`;
+    } else if (currentView.type === "auto") {
+      emptyMessageEl.textContent = "このカテゴリに該当する曲はまだありません。";
     } else {
       emptyMessageEl.textContent = "曲がありません。上の「＋ 曲を追加」またはドラッグ&ドロップで追加してください。";
     }
@@ -237,6 +272,9 @@ function selectView(view) {
     currentViewTitleEl.textContent = "すべての曲";
   } else if (view.type === "recent") {
     currentViewTitleEl.textContent = `🆕 今週の新着（直近${RECENT_DAYS}日）`;
+  } else if (view.type === "auto") {
+    const cat = AUTO_PLAYLISTS.find((c) => c.key === view.key);
+    currentViewTitleEl.textContent = cat ? cat.name : "";
   } else {
     const pl = playlists.find((p) => p.id === view.id);
     currentViewTitleEl.textContent = pl ? pl.name : "";

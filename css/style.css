@@ -142,6 +142,13 @@ header h1 {
   background: #26262a;
 }
 
+.panel-subtitle {
+  font-size: 11px;
+  color: var(--text-sub);
+  opacity: 0.7;
+  padding: 10px 8px 4px;
+}
+
 .playlist-item.active {
   background: #1e3a5f;
   color: var(--text);
