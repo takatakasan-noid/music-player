@@ -546,7 +546,7 @@ async function loadFromDrive() {
     playlists = await Drive.getPlaylists();
     signedIn = true;
     setConnectUI("connected");
-    selectView({ type: "library" });
+    selectView({ type: "recent" });
   } catch (e) {
     signedIn = false;
     setConnectUI("error");
@@ -580,4 +580,4 @@ function onGisLoad() {
 }
 
 setConnectUI("none");
-selectView({ type: "library" });
+selectView({ type: "recent" });
